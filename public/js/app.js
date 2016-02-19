@@ -2,12 +2,13 @@
 $(document).ready(function(){
   var baseUrl = 'https://api.forecast.io/forecast/';
   var name = "Your Name";
-
-  $('#get-weather').on('click', getWeather);
-
+  // $('#get-weather').on('click', getWeather);
+  $('#get-weather').on('click', showInfo);
 
 
   function buildUrl(lat, lon){
+
+    // return "https://api.forecast.io/forecast/127912e1db6cddb3a4344cb64a0023da/37.8267,-122.423";
     return baseUrl + apiKey+'/'+lat+','+lon;
   }
 
@@ -35,4 +36,33 @@ $(document).ready(function(){
   function errorHandler(err){
     console.log(err);
   }
+
+  function showInfo(){
+  var lat = $('#latitude').val();
+  var lon = $('#longitude').val();
+  var ajaxOptions = {
+    url: buildUrl(lat,lon),
+    dataType: 'jsonp',
+    success: showInfoSuccess,
+    error: errorHandler
+  };
+
+  $.ajax(ajaxOptions);
+}
+
+  function showInfoSuccess(data){
+    console.log(data);
+    var source = $('#info').html();
+    var template = Handlebars.compile(source);
+    var extractedData = {
+      latitude: data.latitude,
+      longitude: data.longitude,
+      icon: data.currently.icon || 'clear-night',
+      summary: data.currently.summary,
+      time: data.currently.time
+    };
+    var html = template(extractedData);
+    $('#test-output').html(html);
+  }
+
 });
